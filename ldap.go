@@ -23,6 +23,7 @@ type ldapEnv struct {
 	uid    string
 	binddn string
 	bindpw string
+	uidmap string
 }
 
 func (l *ldapEnv) connect() (*ldap.Conn, error) {
@@ -66,7 +67,7 @@ func (l *ldapEnv) search(c *ldap.Conn) ([]*ldap.Entry, error) {
 	searchRequest := ldap.NewSearchRequest(
 		l.base, ldap.ScopeWholeSubtree, ldap.NeverDerefAliases,
 		0, 0, false,
-		fmt.Sprintf(l.filter, l.uid), []string{sshPublicKeyName}, nil)
+		fmt.Sprintf(l.fullFilter(), l.uid), []string{sshPublicKeyName}, nil)
 	sr, err := c.Search(searchRequest)
 	return sr.Entries, err
 }

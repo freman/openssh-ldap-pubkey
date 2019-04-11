@@ -96,8 +96,9 @@ func main() {
 		log.Printf("[debug] tls	  : %v\n", l.tls)
 		log.Printf("[debug] base  : %s\n", l.base)
 		log.Printf("[debug] skip  : %v\n", l.skip)
-		log.Printf("[debug] filter: %s\n", l.filter)
+		log.Printf("[debug] filter: %s\n", l.fullFilter())
 		log.Printf("[debug] uid	  : %s\n", l.uid)
+		log.Printf("[debug] uidmap: %s\n", l.uidmap)
 		log.Printf("[debug] binddn: %s\n", l.binddn)
 		log.Printf("[debug] bindpw: %s\n", bindpw)
 	}

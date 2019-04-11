@@ -35,6 +35,7 @@ func (l *ldapEnv) loadNslcdConf() error {
 		l.debug = false
 		l.binddn = ""
 		l.bindpw = ""
+		l.uidmap = "uid"
 	}
 	for _, s := range strings.Split(string(b), "\n") {
 		v := strings.Split(s, " ")
@@ -69,7 +70,13 @@ func (l *ldapEnv) loadNslcdConf() error {
 				}
 			}
 		case v[0] == "base":
-			l.base = v[1]
+			if len(v) == 3 {
+				if v[1] == "passwd" {
+					l.base = v[2]
+				}
+			} else if l.base == "" {
+				l.base = v[1]
+			}
 		case v[0] == "binddn":
 			l.binddn = v[1]
 		case v[0] == "bindpw":
@@ -84,6 +91,10 @@ func (l *ldapEnv) loadNslcdConf() error {
 			if v[1] == "never" || v[1] == "allow" {
 				l.skip = true
 			}
+		case v[0] == "filter" && len(v) >= 3 && v[1] == "passwd":
+			l.filter = strings.Join(v[2:], " ")
+		case v[0] == "map" && len(v) == 4 && v[1] == "passwd" && v[2] == "uid":
+			l.uidmap = v[3]
 		default:
 			if l.filter == "" {
 				l.filter = defaultFilter
@@ -91,4 +102,8 @@ func (l *ldapEnv) loadNslcdConf() error {
 		}
 	}
 	return nil
+}
+
+func (l ldapEnv) fullFilter() string {
+	return "(&" + l.filter + "(" + l.uidmap + "=%s))"
 }
